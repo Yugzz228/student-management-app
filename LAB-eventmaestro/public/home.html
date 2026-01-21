@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Maestro - Home</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="navbar">
+        <h2>🎭 Event Maestro</h2>
+        <div class="nav-right">
+            <span id="welcomeUser"></span>
+            <button id="logoutBtn" class="btn-secondary">Logout</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Welcome to Event Maestro Dashboard</h1>
+        
+        <div class="section">
+            <h2>🛍️ Available Items</h2>
+            <div class="cards-container">
+                <div class="card">
+                    <div class="card-icon">💻</div>
+                    <h3>Laptop</h3>
+                    <p>High-performance laptop</p>
+                    <p class="price">$999</p>
+                    <button class="btn-primary purchase-btn" data-item="Laptop">Purchase</button>
+                </div>
+                
+                <div class="card">
+                    <div class="card-icon">📱</div>
+                    <h3>Smartphone</h3>
+                    <p>Latest model smartphone</p>
+                    <p class="price">$699</p>
+                    <button class="btn-primary purchase-btn" data-item="Smartphone">Purchase</button>
+                </div>
+                
+                <div class="card">
+                    <div class="card-icon">🎧</div>
+                    <h3>Headphones</h3>
+                    <p>Noise-canceling headphones</p>
+                    <p class="price">$199</p>
+                    <button class="btn-primary purchase-btn" data-item="Headphones">Purchase</button>
+                </div>
+                
+                <div class="card">
+                    <div class="card-icon">⌚</div>
+                    <h3>Smartwatch</h3>
+                    <p>Fitness tracking smartwatch</p>
+                    <p class="price">$299</p>
+                    <button class="btn-primary purchase-btn" data-item="Smartwatch">Purchase</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>👤 Profile Settings</h2>
+            <div class="profile-options">
+                <button class="btn-action update-btn" data-field="Email">Update Email</button>
+                <button class="btn-action update-btn" data-field="Phone">Update Phone</button>
+                <button class="btn-action update-btn" data-field="Address">Update Address</button>
+                <button class="btn-action update-btn" data-field="Password">Change Password</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📊 Event Summary</h2>
+            <button id="summaryBtn" class="btn-primary">Generate Summary Report</button>
+            <div id="summaryDisplay" class="summary-box"></div>
+        </div>
+
+        <div id="notification" class="notification"></div>
+    </div>
+
+    <script>
+        // Check if user is logged in
+        async function checkSession() {
+            const response = await fetch('/check-session');
+            const data = await response.json();
+            
+            if (!data.loggedIn) {
+                window.location.href = 'login.html';
+            } else {
+                document.getElementById('welcomeUser').textContent = `Welcome, ${data.username}!`;
+            }
+        }
+
+        checkSession();
+
+        // Notification function
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        // Purchase buttons
+        document.querySelectorAll('.purchase-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const item = e.target.getAttribute('data-item');
+                
+                const response = await fetch('/purchase', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ item })
+                });
+                
+                const data = await response.json();
+                showNotification(data.message, data.success ? 'success' : 'error');
+            });
+        });
+
+        // Profile update buttons
+        document.querySelectorAll('.update-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const field = e.target.getAttribute('data-field');
+                
+                const response = await fetch('/update-profile', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ field })
+                });
+                
+                const data = await response.json();
+                showNotification(data.message, data.success ? 'success' : 'error');
+            });
+        });
+
+        // Summary button
+        document.getElementById('summaryBtn').addEventListener('click', async () => {
+            const response = await fetch('/summary');
+            const data = await response.json();
+            
+            const summaryDisplay = document.getElementById('summaryDisplay');
+            summaryDisplay.innerHTML = `
+                <h3>Event Tracking Report</h3>
+                <div class="summary-item">
+                    <span>User Login Events:</span>
+                    <span class="count">${data.tracker['user-login']}</span>
+                </div>
+                <div class="summary-item">
+                    <span>User Logout Events:</span>
+                    <span class="count">${data.tracker['user-logout']}</span>
+                </div>
+                <div class="summary-item">
+                    <span>User Purchase Events:</span>
+                    <span class="count">${data.tracker['user-purchase']}</span>
+                </div>
+                <div class="summary-item">
+                    <span>Profile Update Events:</span>
+                    <span class="count">${data.tracker['profile-update']}</span>
+                </div>
+                <div class="summary-total">
+                    <span>Total Events:</span>
+                    <span class="count">${data.total}</span>
+                </div>
+            `;
+            summaryDisplay.style.display = 'block';
+            showNotification('Summary report generated!', 'success');
+        });
+
+        // Logout button
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            const response = await fetch('/logout', {
+                method: 'POST'
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                window.location.href = 'login.html';
+            }
+        });
+    </script>
+</body>
+</html>

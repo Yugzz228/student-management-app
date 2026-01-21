@@ -1,0 +1,20 @@
+{
+    "name": "event-maestro",
+    "version": "1.0.0",
+    "description": "Event Emitter tracking system with web interface",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "keywords": [
+        "event-emitter",
+        "nodejs",
+        "express"
+    ],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "express": "^4.22.1",
+        "express-session": "^1.17.3"
+    }
+}
