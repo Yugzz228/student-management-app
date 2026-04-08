@@ -1,0 +1,38 @@
+{% extends 'students/base.html' %}
+{% block title %}Delete {{ student.name }} | Nexus Academy{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto my-16">
+    <div class="glass-panel rounded-[2rem] overflow-hidden shadow-2xl border-2 border-white/40 text-center relative pointer-events-auto">
+        <!-- Danger glow background -->
+        <div class="absolute inset-0 bg-red-500 mix-blend-overlay opacity-10 pointer-events-none"></div>
+        
+        <div class="p-12 relative z-10">
+            <div class="mx-auto flex items-center justify-center h-24 w-24 rounded-full bg-red-100/50 border-4 border-red-200/50 mb-8 backdrop-blur-sm shadow-xl">
+                <i class="fas fa-biohazard text-5xl text-red-600 animate-pulse"></i>
+            </div>
+            
+            <h2 class="text-4xl font-black text-gray-900 mb-6 drop-shadow-sm tracking-tight">Confirm Erausre</h2>
+            
+            <p class="text-gray-900 text-xl font-medium mb-4 leading-relaxed">
+                Are you absolutely sure you want to permanently delete the scholar record for <br/>
+                <span class="inline-block mt-4 text-2xl font-black text-indigo-900 bg-white/40 px-6 py-2 rounded-xl border border-white/50 shadow-sm">{{ student.name }} <span class="text-indigo-600">({{ student.roll_number }})</span></span>
+            </p>
+            
+            <p class="text-red-700 bg-red-100/60 p-4 rounded-xl border border-red-200 mt-8 mb-10 font-bold backdrop-blur-sm">
+                <i class="fas fa-exclamation-triangle mr-2"></i> This action is irreversible and will instantly destroy all related records.
+            </p>
+            
+            <form method="POST" class="flex flex-col sm:flex-row justify-center gap-5">
+                {% csrf_token %}
+                <a href="{% url 'student_list' %}" class="w-full sm:w-auto glass-button text-gray-900 py-3.5 px-8 rounded-xl font-bold text-center transition-all hover:scale-105">
+                    Cancel Action
+                </a>
+                <button type="submit" class="w-full sm:w-auto bg-gradient-to-r from-red-600 to-pink-600 text-white border border-red-400 py-3.5 px-8 rounded-xl font-bold flex items-center justify-center shadow-lg hover:shadow-2xl shadow-red-500/40 hover:-translate-y-1 transition-all">
+                    <i class="fas fa-skull mr-3 text-lg"></i> Authenticate Erasure
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
